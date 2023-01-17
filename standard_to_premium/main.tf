@@ -74,6 +74,51 @@ resource "azurerm_firewall_policy" "policy" {
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   sku                 = each.value["sku"]
+  base_policy_id = try(azurerm_firewall_policy.policy[each.key].base_policy_id)
+
+  dns {
+    proxy_enabled = try(azurerm_firewall_policy.policy[each.key].dns.proxy_enabled)
+    servers = try(azurerm_firewall_policy.policy[each.key].dns.servers)
+  }
+
+  identity {
+    type = try(azurerm_firewall_policy.policy[each.key].identity.type)
+    identity_ids = try(azurerm_firewall_policy.policy[each.key].identity.identity_ids)
+  }
+
+  insights {
+    enabled = try(azurerm_firewall_policy.policy[each.key].insights.enabled)
+    default_log_analytics_workspace_id = try(azurerm_firewall_policy.policy[each.key].insights.default_log_analytics_workspace_id)
+  }
+
+  intrusion_detection {
+    mode = try(azurerm_firewall_policy.policy[each.key].intrusion_detection.mode)
+    dynamic "signature_overrides" {
+
+    }
+    dynamic "traffic_bypass" {
+      
+    }
+    private_ranges = try(azurerm_firewall_policy.policy[each.key].intrusion_detection.private_ranges)
+  }
+
+  private_ip_ranges = try(azurerm_firewall_policy.policy[each.key].private_ip_ranges, null)
+
+  auto_learn_private_ranges_enabled = try(azurerm_firewall_policy.policy[each.key].auto_learn_private_ranges_enabled, null)
+
+  threat_intelligence_allow_list = try(azurerm_firewall_policy.policy[each.key].threat_intelligence_allow_list, null)
+
+  threat_intelligence_mode = try(azurerm_firewall_policy.policy[each.key].threat_intelligence_mode, null)
+
+  tls_certificate {
+
+  }
+
+  sql_redirect_allowed = try(azurerm_firewall_policy.policy[each.key].sql_redirect_allowed, null)
+
+  explicity_proxy {
+
+  }
 }
 
 resource "azurerm_firewall_policy_rule_collection_group" "rcg" {
@@ -127,6 +172,9 @@ resource "azurerm_firewall_policy_rule_collection_group" "rcg" {
         }
       }
     }
+  }
+  dynamic "nat_rule_collection" {
+
   }
 }
 
